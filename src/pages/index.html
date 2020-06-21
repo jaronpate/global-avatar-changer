@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <link rel="stylesheet" type="text/css" href="../lib/semantic/semantic.min.css">
+  <link rel="stylesheet" type="text/css" href="../lib/fontawesome/fontawesome.min.css">
+  <link rel="stylesheet" href="../assets/css/index.css">
+</head>
+
+<body>
+  <i class="fas fa-question-circle" id="info"></i>
+
+  <div id="holder">
+    <p style="margin: 2px;">Made by <strong>Jaron</strong></p>
+    <h1 style="margin-top: 10px;">Upload Your New Avatar</h1>
+
+    <div class="ui warning message close small hidden">
+      <i class="close icon"></i>
+      <div class="header">
+        Please submit a valid image...
+      </div>
+    </div>
+    <div class="ui positive message close small hidden">
+      <i class="close icon"></i>
+      <div class="header">
+        Avatars successfully updated!
+      </div>
+    </div>
+
+    <i class="far fa-clone file-upload" id="file"></i>
+  </div>
+  <div class="hidden" id="avatar"></div>
+
+  <div class="circular-option">
+    <label class="slider-label" for="circular"><i class="fas fa-square"></i></label>
+    <div class="ui toggle fitted checkbox">
+      <input type="checkbox" name="circular" id="circular">
+      <label></label>
+    </div>
+    <label class="slider-label" for="circular"><i class="fas fa-circle"></i></label>
+  </div>
+
+  <div class="buttons">
+      <button class="ui primary button disabled" id="update">
+        Update
+      </button>
+      <button class="ui button" id="settings">
+        Settings
+      </button>
+  </div>
+
+  <div class="ui modal" id="settingsModal">
+    <div class="header">Settings</div>
+    <div class="scrolling content">
+      <!-- Discord Settings -->
+      <h3 class="ui dividing header">
+        Discord
+        
+        <div class="ui toggle fitted checkbox">
+          <input type="checkbox" name="denabled" id="denabled">
+          <label></label>
+        </div>
+
+      </h3>
+      
+      <form class="ui form inverted">
+        <!-- <div class="fields"> -->
+
+          <div class="field">
+            <div class="ui mini left icon input">
+              <input type="password" placeholder="Token" name="dtoken" id="dtoken">
+              <i class="key icon"></i>
+            </div>
+          </div>
+
+        <!-- </div> -->
+
+      </form>
+
+      <!-- Twitter Settings -->
+      <h3 class="ui dividing header">
+        Twitter
+        
+        <div class="ui toggle fitted checkbox">
+          <input type="checkbox" name="tenabled" id="tenabled">
+          <label></label>
+        </div>
+
+      </h3>
+      
+      <form class="ui form inverted">
+        <!-- <div class="fields"> -->
+
+          <div class="field">
+            <div class="ui mini left icon input">
+              <input type="text" placeholder="Username" name="tusername" id="tusername">
+              <i class="user icon"></i>
+            </div>
+          </div>
+
+          <div class="field">
+            <div class="ui mini left icon input">
+              <input type="password" placeholder="Password" name="tpassword" id="tpassword">
+              <i class="key icon"></i>
+            </div>
+          </div>
+
+        <!-- </div> -->
+
+      </form>
+
+      <!-- GitHub Settings -->
+      <h3 class="ui dividing header">
+        GitHub
+        
+        <div class="ui toggle fitted checkbox">
+          <input type="checkbox" name="ghenabled" id="ghenabled">
+          <label></label>
+        </div>
+
+      </h3>
+      
+      <form class="ui form inverted">
+        <!-- <div class="fields"> -->
+
+          <div class="field">
+            <div class="ui mini left icon input">
+              <input type="text" placeholder="Username" name="ghusername" id="ghusername">
+              <i class="user icon"></i>
+            </div>
+          </div>
+
+          <div class="field">
+            <div class="ui mini left icon input">
+              <input type="password" placeholder="Password" name="ghpassword" id="ghpassword">
+              <i class="key icon"></i>
+            </div>
+          </div>
+
+        <!-- </div> -->
+
+      </form>
+
+      <!-- Instagram Settings -->
+      <h3 class="ui dividing header">
+        Instagram
+        
+        <div class="ui toggle fitted checkbox">
+          <input type="checkbox" name="ghenabled" id="instaenabled">
+          <label></label>
+        </div>
+
+      </h3>
+      
+      <form class="ui form inverted">
+        <!-- <div class="fields"> -->
+
+          <div class="field">
+            <div class="ui mini left icon input">
+              <input type="text" placeholder="Username" name="instausername" id="instausername">
+              <i class="user icon"></i>
+            </div>
+          </div>
+
+          <div class="field">
+            <div class="ui mini left icon input">
+              <input type="password" placeholder="Password" name="instapassword" id="instapassword">
+              <i class="key icon"></i>
+            </div>
+          </div>
+
+        <!-- </div> -->
+
+      </form>
+      
+    </div>
+    <div class="actions">
+      <div class="ui approve primary button">Save</div>
+      <div class="ui cancel grey button">Cancel</div>
+    </div>
+  </div>
+
+  <div class="ui mini modal" id="authModal">
+    <div class="header" id="authHeader">Auth Code For </div>
+    
+    <div class="scrolling content">
+      <div class="ui input inverted fluid">
+        <input type="text" id="authCode" placeholder="Auth Code...">
+      </div>
+    </div>
+    
+    <div class="actions">
+      <div class="ui approve primary button">Confirm</div>
+      <!-- <div class="ui cancel grey button">Cancel</div> -->
+    </div>
+  </div>
+
+  <div class="ui tiny modal" id="infoModal">
+    <div class="header">Info</div>
+    <div class="content">
+      <p>This app emulates you logging in when changing your avatar. 
+        <strong style="text-decoration: underline;">You will see attempted logins when using this application.</strong> 
+        Your information is stored locally and never sent anywhere.
+      </p>
+        <div style="display: flex; justify-content: space-between;">
+
+          <div>Support/Contact: <a href="https://discord.gg/uAYhzvb">Discord Server</a></div>
+          
+          <div id="debug-option">
+            <label style="cursor: pointer; vertical-align: top;" for="debug"> Debug Mode: </label> 
+            <div class="ui toggle fitted checkbox">
+              <input type="checkbox" name="debug" id="debug">
+              <label></label>
+            </div>
+          </div>
+
+        </div>
+      </p>
+    </div>
+    <div class="actions">
+      <div class="ui cancel grey button">Close</div>
+    </div>
+  </div>
+  
+</body>
+<script src="../lib/jquery/jquery-3.5.1.min.js"></script>
+<script>
+  try {
+    $ = jQuery = module.exports;
+    module.exports = {};
+  } catch(e) {}
+</script>
+<script src="../assets/js/main.js" defer></script>
+<script src="../lib/semantic/semantic.min.js" defer></script>
+<!-- <script src="https://kit.fontawesome.com/d62e8af8ae.js" crossorigin="anonymous"></script> -->
+</html>

@@ -1,0 +1,99 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap');
+html, body, h1{
+  font-family: 'Montserrat', sans-serif !important;
+}
+::selection{
+  /* background: none !important; */
+  /* color: white !important; */
+}
+body{
+  color: white;
+  background-color: transparent;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  height: 100% !important;
+}
+
+#holder{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+#avatar{
+  width: 250px;
+  height: 250px;
+  border-radius: 2%;
+  background-size: cover !important;
+  box-shadow: 4px 5px 15px 5px rgba(0, 0, 0, 0.45);
+  transition: border-radius 0.15s;
+}
+
+#info{
+  font-size: 2em;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+}
+
+.circle{
+  border-radius: 50% !important;
+}
+
+.hidden{
+  display: none !important;
+}
+
+.file-upload{
+  font-size: 6em;
+  margin: 0.5em;
+}
+
+.circular-option{
+  margin-top: 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.buttons{
+  margin-top: 15px;
+}
+
+.modal, .modal .header, .modal .content, .modal .actions{
+  background: #141414 !important;
+  color: white !important;
+  border-color: #1a1a1a !important;
+}
+
+.ui.toggle.checkbox .box:before, .ui.toggle.checkbox label:before{
+  background: #292929 !important;
+}
+
+.slider-label{
+  display: inline !important;
+  vertical-align: super; 
+  cursor: pointer;
+  color: white !important;
+  font-size: 1.8em;
+  margin: 0px 15px !important;
+}
+
+.ui .toggle{
+  vertical-align: sub;
+  margin-left: 5px;
+}
+
+i.icon.close{
+  display: none;
+}
+
+.ui.message{
+  position: absolute;
+  top: 10px;
+}
