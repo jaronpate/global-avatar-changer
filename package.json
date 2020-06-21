@@ -1,6 +1,6 @@
 {
   "name": "global-pfp-changer",
-  "productName": "global-pfp-changer",
+  "productName": "Global Avatar Changer",
   "version": "1.0.0",
   "description": "My Electron application description",
   "main": "src/index.js",
@@ -20,18 +20,21 @@
   "build": {
     "appID": "global-avatar-changer",
     "productName": "Global Avatar Changer",
-    "icon": "./src/assets/legit.ico"
+    "icon": "src/assets/legit.ico"
   },
   "config": {
     "forge": {
       "packagerConfig": {
-        "icon": "./src/assets/legit.ico"
+        "icon": "src/assets/legit.ico"
       },
       "makers": [
         {
           "name": "@electron-forge/maker-squirrel",
           "config": {
-            "name": "global_pfp_changer"
+            "name": "Global-Avatar-Changer",
+            "setupIcon": "C:/Users/JaronP/Documents/GitHub/global-avatar-changer/src/assets/legit.ico",
+            "iconUrl": "C:/Users/JaronP/Documents/GitHub/global-avatar-changer/src/assets/legit.ico",
+            "loadingGif": "C:/Users/JaronP/Documents/GitHub/global-avatar-changer/src/assets/legit.gif"
           }
         },
         {

@@ -3,6 +3,9 @@ const path = require('path');
 const Store = require('electron-store');
 const { stringify } = require('querystring');
 
+// installer
+if (require('electron-squirrel-startup')) return app.quit();
+
 const store = new Store({ encryptionKey: "obfuscate" })
 var win
 
