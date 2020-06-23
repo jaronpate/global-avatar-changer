@@ -1,6 +1,9 @@
+const fs = require("fs")
 const path = require("path")
 const { ipcRenderer } = require('electron')
 const Store = require('electron-store');
+
+console.log(fs.existsSync(path.resolve(path.dirname(process.execPath), '..', 'Update.exe')))
 
 const store = new Store({ encryptionKey: "obfuscate" });
 
@@ -16,6 +19,10 @@ let succmsg = document.querySelector(".ui.positive.message");
 // discord
 let denabled = document.getElementById("denabled");
 let dtoken = document.getElementById("dtoken");
+// twitter
+let steamenabled = document.getElementById("steamenabled");
+let steamusername = document.getElementById("steamusername");
+let steampassword = document.getElementById("steampassword");
 // twitter
 let tenabled = document.getElementById("tenabled");
 let tusername = document.getElementById("tusername");
@@ -34,6 +41,7 @@ let circular = document.getElementById("circular");
 let debug = document.getElementById("debug");
 
 let avatarPath;
+
 
 // accept file
 document.addEventListener('drop', (e) => {
@@ -97,6 +105,11 @@ function change_back() {
 window.onload = () => {
   circular.checked = store.get("circular");
   debug.checked = store.get("debug");
+  updt = store.get("update")
+  if(updt){ 
+    document.getElementById("releaseName").innerHTML = updt.ver
+    document.getElementById("updt").classList.remove("hidden")
+  }
   if(circular.checked){ avatar.classList.add("circle") }
   document.querySelector(".circular-option").addEventListener("click",(e) => {
     store.set("circular", circular.checked)
@@ -124,6 +137,14 @@ window.onload = () => {
       authInput.value = ""
     }
   });
+  $('#updateModal')
+  .modal({
+    closable: false,
+    onApprove: (el) => {
+      ipcRenderer.send("update")
+      store.delete("update")
+    }
+  });
   $('#settingsModal')
   .modal({
     onApprove: async (el) => {
@@ -131,6 +152,11 @@ window.onload = () => {
         discord: {
           enabled: denabled.checked,
           token: dtoken.value
+        },
+        steam:{
+          enabled: steamenabled.checked,
+          username: steamusername.value,
+          password: steampassword.value
         },
         twitter: {
           enabled: tenabled.checked,
@@ -157,11 +183,19 @@ window.onload = () => {
     $('#infoModal')
     .modal('show');
   })
+  document.getElementById("updt").addEventListener("click", async (e) => {
+    $('#updateModal')
+    .modal('show');
+  })
   document.getElementById("settings").addEventListener("click", async (e) => {
     let settings = await store.get("settings")
     if(settings){
       denabled.checked = settings.discord.enabled
       dtoken.value = settings.discord.token
+
+      steamenabled.checked = settings.steam.enabled
+      steamusername.value = settings.steam.username
+      steampassword.value = settings.steam.password
 
       tenabled.checked = settings.twitter.enabled
       tusername.value = settings.twitter.username
@@ -204,6 +238,13 @@ ipcRenderer.on("authCode", (e, arg) => {
   .modal('show');
 })
 
+ipcRenderer.on("update", (e, arg) => {
+  console.log(arg)
+  store.set("update", { downloaded: true, ver: arg.name })
+  document.getElementById("releaseName").innerHTML = arg.name
+  document.getElementById("updt").classList.remove("hidden")
+})
+
 ipcRenderer.on("error", (e, arg) => {
   errmsg.innerHTML = arg
   errmsg.classList.remove("hidden")
@@ -214,4 +255,8 @@ ipcRenderer.on("error", (e, arg) => {
       .transition('fade');
   ;
   }, 2500)
+})
+
+ipcRenderer.on("log", (e, arg) => {
+  console.log(arg)
 })

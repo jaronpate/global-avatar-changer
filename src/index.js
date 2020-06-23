@@ -1,7 +1,13 @@
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow, ipcMain, autoUpdater } = require('electron');
+const fs = require('fs');
 const path = require('path');
 const Store = require('electron-store');
 const { stringify } = require('querystring');
+
+const server = 'https://avatar-changer-update-server.vercel.app'
+const url = `${server}/update/${process.platform}/${app.getVersion()}`
+
+autoUpdater.setFeedURL({ url })
 
 // installer
 if (require('electron-squirrel-startup')) return app.quit();
@@ -12,11 +18,6 @@ var win
 const icons = {
   logo: path.join(__dirname, 'assets/legit.png'),
   ico: path.join(__dirname, 'assets/legit.ico'),
-}
-
-// Handle creating/removing shortcuts on Windows when installing/uninstalling.
-if (require('electron-squirrel-startup')) { // eslint-disable-line global-require
-  app.quit();
 }
 
 
@@ -45,6 +46,33 @@ const createWindow = () => {
   // Open the DevTools.
   // mainWindow.webContents.openDevTools();
 };
+
+// Notify of update
+if(fs.existsSync(path.resolve(path.dirname(process.execPath), '..', 'Update.exe'))){
+  autoUpdater.on('update-downloaded', (e, releaseNotes, releaseName) => {
+    console.log("[global-pfp-changer] update downloaded")
+    console.log(e, releaseNotes, releaseName)
+    win.webContents.send("log", "[global-pfp-changer] update downloaded")
+    win.webContents.send("log", {notes: releaseNotes, name: releaseName})
+    win.webContents.send("update", {notes: releaseNotes, name: releaseName})
+  })
+  autoUpdater.on('update-available', (e, releaseNotes, releaseName) => {
+    console.log(e, releaseNotes, releaseName)
+    win.webContents.send("log", "[global-pfp-changer] update available, downloading...")
+  })
+  // Check for updates
+  setInterval(() => {
+    autoUpdater.checkForUpdates()
+  }, 60000)
+  // Install updates
+  ipcMain.on("update", (e, arg) => {
+    autoUpdater.quitAndInstall()
+  })
+  autoUpdater.on('error', message => {
+    win.webContents.send("log", message)
+    console.log(message)
+  })
+}
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
@@ -111,7 +139,7 @@ async function changepfp(avatarPath) {
 
   await godIFuckingHateBase64();
 
-  const browser = await puppeteer.launch({ headless: await store.get("debug") })
+  const browser = await puppeteer.launch({ headless: !(await store.get("debug")) })
   const pages = await browser.pages()
   const page = pages[0] ? pages[0] : browser.newPage()
   await page.setViewport({ width: 1000, height: 1000 })
@@ -217,9 +245,8 @@ async function changepfp(avatarPath) {
 
     let check = await page.$('p[role="alert"]')
     if(check){
-      console.log("if statement")
       win.webContents.send("error", "Incorrect login details for Instagram")
-      // await browser.close()
+      await browser.close()
       return "error"
     }
 
@@ -253,6 +280,46 @@ async function changepfp(avatarPath) {
     await input[1].uploadFile(theFuckingFile)
     console.log("[global-pfp-updt] Instagram updated...")
   }
+  if(config.steam.enabled){
+    await page.goto("https://steamcommunity.com/login")
+    await page.waitFor('input[name="username"]')
+    await page.waitFor('input[name="password"]')
+    await page.type('input[name="username"]', config.steam.username, { delay: 0 })
+    await page.type('input[name="password"]', config.steam.password, { delay: 0 })
+    await page.click('#SteamLogin')
+    await sleep(2500)
+
+    let check = await page.$('.newmodal')
+    if(await page.url().startsWith("https://steamcommunity.com/login") && check === null){
+      win.webContents.send("error", "Incorrect login details for Steam")
+      await browser.close()
+      return "error"
+    }
+    let i = 0
+    while(await page.$('#authcode')){
+      let auth = await page.$('#authcode')
+      // loop until auth code is correct
+      win.webContents.send("authCode", "Auth code for Steam")
+      authCode = await waitForAuth()
+      await auth.click({clickCount: 3});
+      await auth.press('Backspace'); 
+      await page.type('#authcode', authCode, { delay: 0 })
+      input = await page.$('#auth_buttonset_entercode .leftbtn')
+      let otherInput = await page.$('#auth_buttonset_incorrectcode .leftbtn')
+      console.log(i)
+      if(i > 0){ 
+        console.log("if")
+        await otherInput.click() }
+      else{ 
+        console.log("else")
+        input.click() }
+      i++
+      await sleep(2500)
+    }
+    
+    await page.waitForNavigation()
+
+  }
   await browser.close()
   if(config.discord.enabled){
     let options = {
@@ -268,7 +335,7 @@ async function changepfp(avatarPath) {
         return "error"
       }
       console.log(body)
-    }) 
+    })
   }
 }
 
@@ -277,7 +344,7 @@ async function sleep(time) {
     setTimeout(async () => {
       res()
     }, time)
-  }) 
+  })
 }
 
 async function waitForAuth(){

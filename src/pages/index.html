@@ -8,6 +8,7 @@
 </head>
 
 <body>
+  <i class="fas fa-cloud-download-alt hidden" id="updt"></i>
   <i class="fas fa-question-circle" id="info"></i>
 
   <div id="holder">
@@ -76,6 +77,35 @@
         <!-- </div> -->
 
       </form>
+      <!-- Steam Settings -->
+      <!-- <h3 class="ui dividing header">
+        Steam
+        
+        <div class="ui toggle fitted checkbox">
+          <input type="checkbox" name="steamenabled" id="steamenabled">
+          <label></label>
+        </div>
+
+      </h3>
+      
+      <form class="ui form inverted">
+
+          <div class="field">
+            <div class="ui mini left icon input">
+              <input type="text" placeholder="Username" name="steamusername" id="steamusername">
+              <i class="user icon"></i>
+            </div>
+          </div>
+
+          <div class="field">
+            <div class="ui mini left icon input">
+              <input type="password" placeholder="Password" name="steampassword" id="steampassword">
+              <i class="key icon"></i>
+            </div>
+          </div>
+
+
+      </form> -->
 
       <!-- Twitter Settings -->
       <h3 class="ui dividing header">
@@ -202,26 +232,36 @@
         <strong style="text-decoration: underline;">You will see attempted logins when using this application.</strong> 
         Your information is stored locally and never sent anywhere.
       </p>
-        <div style="display: flex; justify-content: space-between;">
+      <div style="display: flex; justify-content: space-between;">
 
-          <div>Support/Contact: <a href="https://discord.gg/uAYhzvb">Discord Server</a></div>
-          
-          <div id="debug-option">
-            <label style="cursor: pointer; vertical-align: top;" for="debug"> Debug Mode: </label> 
-            <div class="ui toggle fitted checkbox">
-              <input type="checkbox" name="debug" id="debug">
-              <label></label>
-            </div>
+        <div>Support/Contact: <a href="https://discord.gg/uAYhzvb">Discord Server</a></div>
+        
+        <div id="debug-option">
+          <label style="cursor: pointer; vertical-align: top;" for="debug"> Debug Mode: </label> 
+          <div class="ui toggle fitted checkbox">
+            <input type="checkbox" name="debug" id="debug">
+            <label></label>
           </div>
-
         </div>
-      </p>
+
+      </div>
     </div>
     <div class="actions">
       <div class="ui cancel grey button">Close</div>
     </div>
   </div>
-  
+
+  <div class="ui tiny modal" id="updateModal">
+    <div class="header">Update Available</div>
+    <div class="content">
+      <p> An update is avalible (v<span id="releaseName"></span>) </p>
+    </div>
+    <div class="actions">
+      <div class="ui approve primary button">Update</div>
+      <div class="ui cancel grey button">Close</div>
+    </div>
+  </div>
+
 </body>
 <script src="../lib/jquery/jquery-3.5.1.min.js"></script>
 <script>
