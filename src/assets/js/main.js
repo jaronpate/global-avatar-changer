@@ -44,7 +44,7 @@ let avatarPath;
 
 
 // accept file
-document.addEventListener('drop', (e) => {
+document.body.addEventListener('drop', (e) => {
   e.preventDefault();
   e.stopPropagation();
 

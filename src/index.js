@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, autoUpdater } = require('electron');
+const { app, BrowserWindow, ipcMain, autoUpdater, shell } = require('electron');
 const fs = require('fs');
 const path = require('path');
 const Store = require('electron-store');
@@ -25,9 +25,11 @@ const createWindow = () => {
   // Create the browser window.
   win = new BrowserWindow({
     minWidth: 600,
-    minHeight: 600,
+    minHeight: 500,
     width: 600,
-    height: 600,
+    height: 500,
+    // maxWidth: 600,
+    // maxHeight: 500,
     backgroundColor: "#141414",
     title: "Global Avatar Changer",
     // opacity: 0.95,
@@ -35,15 +37,21 @@ const createWindow = () => {
       // devTools: false,
       nodeIntegration: true
     },
-    icon: icons.ico
+    icon: process.platform === "linux" ? icons.logo : icon.ico
   });
 
-  win.setMenuBarVisibility(false)
+  win.setMenuBarVisibility(false);
 
-  // and load the index.html of the app.
+  const handleRedirect = (e, url) => {
+    if (url !== e.sender.getURL()) {
+      e.preventDefault()
+      console.log(url);
+      shell.openExternal(url)
+    }
+  }
+  win.webContents.on('will-navigate', handleRedirect);
   win.loadFile(path.join(__dirname, 'pages/index.html'));
 
-  // Open the DevTools.
   // mainWindow.webContents.openDevTools();
 };
 
@@ -74,9 +82,6 @@ if(fs.existsSync(path.resolve(path.dirname(process.execPath), '..', 'Update.exe'
   })
 }
 
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
 app.on('ready', createWindow);
 
 // Quit when all windows are closed.
@@ -95,9 +100,6 @@ app.on('activate', () => {
     createWindow();
   }
 });
-
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and import them here.
 
 let avatarPath
 
@@ -121,7 +123,7 @@ async function changepfp(avatarPath) {
   const request = require('request')
   // const config = require('./config')
   const config = store.get("settings")
-  const theFuckingFile = avatarPath;
+  const avatarFile = avatarPath;
 
   const rl = readline.createInterface({
     input: process.stdin,
@@ -132,12 +134,12 @@ async function changepfp(avatarPath) {
   var pfp = {};
   var authCode;
 
-  async function godIFuckingHateBase64() {
-    pfp.uri = `data:image/${path.extname(theFuckingFile)};base64,${await fs.readFileSync(theFuckingFile, "base64")}`
+  async function imgToBase64() {
+    pfp.uri = `data:image/${path.extname(avatarFile)};base64,${await fs.readFileSync(avatarFile, "base64")}`
   }
 
 
-  await godIFuckingHateBase64();
+  await imgToBase64();
 
   const browser = await puppeteer.launch({ headless: !(await store.get("debug")) })
   const pages = await browser.pages()
@@ -185,7 +187,7 @@ async function changepfp(avatarPath) {
     //    upload image
     await page.waitFor('input[accept="image/jpeg,image/png,image/webp"]')
     input = await page.$$('input[accept="image/jpeg,image/png,image/webp"]')
-    await input[1].uploadFile(theFuckingFile)
+    await input[1].uploadFile(avatarFile)
     await sleep(500)
     await page.keyboard.press("Tab")
     await page.keyboard.press("Enter")
@@ -227,7 +229,7 @@ async function changepfp(avatarPath) {
     await page.goto('https://github.com/settings/profile')
     await page.waitFor('input[id="avatar_upload"]')
     input = await page.$('input[id="avatar_upload"]')
-    await input.uploadFile(theFuckingFile)
+    await input.uploadFile(avatarFile)
     await page.waitFor('button[name="op"][value="save"]')
     await page.click('button[name="op"][value="save"]')
     await page.waitForNavigation()
@@ -277,16 +279,17 @@ async function changepfp(avatarPath) {
     await page.goto("https://www.instagram.com/accounts/edit/")
     await page.waitFor('input[accept="image/jpeg,image/png"]')
     input = await page.$$('input[accept="image/jpeg,image/png"]')
-    await input[1].uploadFile(theFuckingFile)
+    await input[1].uploadFile(avatarFile)
     console.log("[global-pfp-updt] Instagram updated...")
   }
   if(config.steam.enabled){
+    // login to steam
     await page.goto("https://steamcommunity.com/login")
     await page.waitFor('input[name="username"]')
     await page.waitFor('input[name="password"]')
     await page.type('input[name="username"]', config.steam.username, { delay: 0 })
     await page.type('input[name="password"]', config.steam.password, { delay: 0 })
-    await page.click('#SteamLogin')
+    await page.click('.login_btn').catch(err => console.log(err))
     await sleep(2500)
 
     let check = await page.$('.newmodal')
@@ -308,17 +311,23 @@ async function changepfp(avatarPath) {
       let otherInput = await page.$('#auth_buttonset_incorrectcode .leftbtn')
       console.log(i)
       if(i > 0){ 
-        console.log("if")
         await otherInput.click() }
-      else{ 
-        console.log("else")
-        input.click() }
+      else{
+        input.click();
+        await sleep(3000)
+        page.click("#success_continue_btn").catch(err => console.log(err));
+      }
       i++
       await sleep(2500)
     }
-    
-    await page.waitForNavigation()
-
+    page.goto("https://steamcommunity.com/id/jaronxp/edit/avatar").catch(err => console.log(err))
+    await page.waitFor('input[accept="image/*"]')
+    input = await page.$$('input[accept="image/*"]')
+    await input[0].uploadFile(avatarFile)
+    await sleep(1500);
+    page.click(".DialogButton._DialogLayout.Primary")
+    await sleep(2000);
+    console.log("[global-pfp-updt] Steam updated...")
   }
   await browser.close()
   if(config.discord.enabled){
